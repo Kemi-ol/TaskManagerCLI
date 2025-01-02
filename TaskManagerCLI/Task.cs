@@ -10,9 +10,9 @@ namespace TaskManagerCLI
     public class Task
     {
         public int Id { get; set; }
-        public string MyGoalDescription {  get; set; } = string.Empty;
+        public required string MyGoalDescription {  get; set; } = string.Empty;
         public DateTime EntryDate { get; set; } 
-        public string? DueDate { get; set; } 
+        public DateTime DueDate { get; set; } 
         public bool IsCompleted { get; set; } = false;
     }
 }

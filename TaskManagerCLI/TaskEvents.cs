@@ -11,7 +11,7 @@ namespace TaskManagerCLI
 {
     public class TaskEvents : ITaskEvents
     {
-        readonly List<Task> goals = [];
+        private readonly List<Task> goals = [];
         int taskIdCounter = 1;
 
         public void AddGoal(string description)
@@ -26,7 +26,7 @@ namespace TaskManagerCLI
                 Id = taskIdCounter,
                 MyGoalDescription = description,
                 EntryDate = DateTime.Now,
-                DueDate = "31/01/2025",
+                DueDate = new DateTime(2025, 12, 31),
                 IsCompleted = false,
             };
             taskIdCounter++;
@@ -150,9 +150,9 @@ namespace TaskManagerCLI
                     if (parts.Length == 5 &&
                         int.TryParse(parts[0], out int id) &&
                         DateTime.TryParse(parts[2], out DateTime entryDate) &&
+                        DateTime.TryParse(parts[3], out DateTime dueDate) &&
                         bool.TryParse(parts[4], out bool isCompleted))
-                    {
-                        string dueDate = parts[3];
+                    
                         {
                             var task = new Task()
                             {
@@ -170,7 +170,7 @@ namespace TaskManagerCLI
                 }
             }
 
-        }
+        
 
         private protected int LoadGoals()
         {
