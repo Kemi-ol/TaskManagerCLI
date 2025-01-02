@@ -129,7 +129,20 @@ namespace TaskManagerCLI
 
         public void SaveGoalsToFile()
         {
-            using StreamWriter writer = new("C:\\Users\\oluwak\\Desktop\\Tasks\\tasks.txt", false);
+            // Get the current user's Desktop folder path
+            string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+
+            // Create a new directory path for the Tasks folder inside the Desktop
+            string tasksDirectory = Path.Combine(desktopPath, "Tasks");
+
+            // Ensure the directory exists (create it if it doesn't)
+            Directory.CreateDirectory(tasksDirectory);
+
+            // Combine the path with the desired file name
+            string filePath = Path.Combine(tasksDirectory, "tasks.txt");
+
+            // Write the tasks to the file
+            using StreamWriter writer = new(filePath, false);
             foreach (var task in goals)
             {
                 writer.WriteLine($"{task.Id}|{task.MyGoalDescription}|{task.EntryDate}|{task.DueDate}|{task.IsCompleted}");
@@ -137,40 +150,41 @@ namespace TaskManagerCLI
         }
 
         public void LoadGoalsFromFile()
-
         {
+            // Get the current user's Desktop folder path
+            string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+
+            // Create the path for the Tasks folder
+            string tasksDirectory = Path.Combine(desktopPath, "Tasks");
+
+            // Define the full file path
+            string filePath = Path.Combine(tasksDirectory, "tasks.txt");
+
+            // Clear existing goals and load from file if it exists
             goals.Clear();
-            if (File.Exists("C:\\Users\\oluwak\\Desktop\\Tasks\\tasks.txt"))
+
+            if (File.Exists(filePath))
             {
-                using StreamReader reader = new("C:\\Users\\oluwak\\Desktop\\Tasks\\tasks.txt");
+                using StreamReader reader = new(filePath);
                 string? line;
                 while ((line = reader.ReadLine()) != null)
                 {
-                    var parts = line.Split('|'); // Use the correct delimiter
-                    if (parts.Length == 5 &&
-                        int.TryParse(parts[0], out int id) &&
-                        DateTime.TryParse(parts[2], out DateTime entryDate) &&
-                        DateTime.TryParse(parts[3], out DateTime dueDate) &&
-                        bool.TryParse(parts[4], out bool isCompleted))
-                    
+                    var parts = line.Split('|');
+                    if (parts.Length == 5)
+                    {
+                        var task = new Task
                         {
-                            var task = new Task()
-                            {
-                                Id = id, // Assign ID from file
-                                MyGoalDescription = parts[1], // Assuming the description is at parts[1]
-                                EntryDate = entryDate,
-                                DueDate = dueDate,
-                                IsCompleted = isCompleted
-                            };
-
-                            goals.Add(task); // Add the task to the list
-                            taskIdCounter = Math.Max(taskIdCounter, id + 1); // Update the task ID counter
-                        }
+                            Id = int.Parse(parts[0]),
+                            MyGoalDescription = parts[1],
+                            EntryDate = DateTime.Parse(parts[2]),
+                            DueDate = DateTime.Parse(parts[3]),
+                            IsCompleted = bool.Parse(parts[4])
+                        };
+                        goals.Add(task);
                     }
                 }
             }
-
-        
+        }
 
         private protected int LoadGoals()
         {
